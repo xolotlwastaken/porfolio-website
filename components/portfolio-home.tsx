@@ -3,6 +3,7 @@
 import {
   AnimatePresence,
   motion,
+  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -222,10 +223,67 @@ function ProjectDetail({ project, onClose }: { project: Project | null; onClose:
   );
 }
 
+type TransitionPhase = "cover" | "reveal" | null;
+
+function BarWipe({ phase }: { phase: TransitionPhase }) {
+  return (
+    <AnimatePresence>
+      {phase ? (
+        <motion.div className="bar-wipe" aria-hidden="true" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          {Array.from({ length: 8 }, (_, index) => (
+            <motion.i
+              key={index}
+              initial={{ scaleX: phase === "cover" ? 0 : 1 }}
+              animate={{ scaleX: phase === "cover" ? 1 : 0 }}
+              transition={{
+                duration: .28,
+                delay: (phase === "cover" ? index : 7 - index) * .034,
+                ease: [0.76, 0, 0.24, 1],
+              }}
+            />
+          ))}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
 export function PortfolioHome() {
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const closeProject = useCallback(() => setSelectedProject(null), []);
+  const [transitionPhase, setTransitionPhase] = useState<TransitionPhase>(null);
+  const transitionTimers = useRef<number[]>([]);
+  const reducedMotion = useReducedMotion();
+
+  const navigateWithBars = useCallback((action: () => void) => {
+    transitionTimers.current.forEach((timer) => window.clearTimeout(timer));
+    transitionTimers.current = [];
+    if (reducedMotion) {
+      action();
+      return;
+    }
+
+    setTransitionPhase("cover");
+    transitionTimers.current.push(
+      window.setTimeout(() => {
+        action();
+        setTransitionPhase("reveal");
+      }, 520),
+      window.setTimeout(() => setTransitionPhase(null), 1040),
+    );
+  }, [reducedMotion]);
+
+  const openProject = useCallback((project: Project) => {
+    navigateWithBars(() => setSelectedProject(project));
+  }, [navigateWithBars]);
+
+  const closeProject = useCallback(() => {
+    navigateWithBars(() => setSelectedProject(null));
+  }, [navigateWithBars]);
+
+  useEffect(() => () => {
+    transitionTimers.current.forEach((timer) => window.clearTimeout(timer));
+  }, []);
 
   return (
     <main>
@@ -305,13 +363,14 @@ export function PortfolioHome() {
               project={project}
               index={index}
               key={project.number}
-              onActivate={setSelectedProject}
+              onActivate={openProject}
               onHover={setHoveredProject}
             />
           ))}
         </div>
       </section>
       <ProjectDetail project={selectedProject} onClose={closeProject} />
+      <BarWipe phase={transitionPhase} />
     </main>
   );
 }
