@@ -262,10 +262,10 @@ a:focus-visible {
   transform: none;
 }
 
-.static-core-table .core-form-productivity { top: auto; bottom: 81%; }
-.static-core-table .core-form-ai { top: auto; bottom: 60%; }
-.static-core-table .core-form-mobile { top: auto; bottom: 39%; }
-.static-core-table .core-form-infra { top: auto; bottom: 18%; }
+.static-core-table .core-form-productivity { left: 66%; top: auto; bottom: 81%; }
+.static-core-table .core-form-ai { left: 61%; top: auto; bottom: 60%; }
+.static-core-table .core-form-mobile { left: 65%; top: auto; bottom: 39%; }
+.static-core-table .core-form-infra { left: 69%; top: auto; bottom: 18%; }
 
 .static-core-table > b {
   position: absolute;

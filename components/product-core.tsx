@@ -257,10 +257,10 @@ function PhysicsScene() {
     <Suspense fallback={null}>
       <Physics gravity={[0, -8.7, 0]} timeStep="vary" interpolate>
         <Table />
-        <PhysicsBlock id="productivity" initial={[2.2, 1.87, 0]} rotation={[0, 0.02, -0.02]}><CeramicBlock /></PhysicsBlock>
-        <PhysicsBlock id="ai" initial={[2.2, 0.93, 0.02]} rotation={[0, 0.03, -0.035]}><LavenderBlock /></PhysicsBlock>
-        <PhysicsBlock id="mobile" initial={[2.2, -0.01, 0]} rotation={[0, -0.04, 0.025]}><SilverBlock /></PhysicsBlock>
-        <PhysicsBlock id="infrastructure" initial={[2.2, -0.95, 0.02]} rotation={[0.02, 0, -0.025]}><GlassBlock /></PhysicsBlock>
+        <PhysicsBlock id="productivity" initial={[2.32, 1.87, 0]} rotation={[0, 0.02, -0.02]}><CeramicBlock /></PhysicsBlock>
+        <PhysicsBlock id="ai" initial={[2.05, 0.93, 0.02]} rotation={[0, 0.03, -0.035]}><LavenderBlock /></PhysicsBlock>
+        <PhysicsBlock id="mobile" initial={[2.26, -0.01, 0]} rotation={[0, -0.04, 0.025]}><SilverBlock /></PhysicsBlock>
+        <PhysicsBlock id="infrastructure" initial={[2.45, -0.95, 0.02]} rotation={[0.02, 0, -0.025]}><GlassBlock /></PhysicsBlock>
       </Physics>
     </Suspense>
   );
