@@ -1,54 +1,11 @@
 "use client";
 
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { usePageTransition } from "./page-transition";
+import { projects, type Project } from "./project-data";
 import { ProductCore } from "./product-core";
-
-type Project = {
-  number: string;
-  title: string;
-  description: string;
-  tone: "silver" | "graphite" | "lavender" | "paper";
-  status: string;
-};
-
-const projects: Project[] = [
-  {
-    number: "01",
-    title: "Aegis Router",
-    description: "Project description and final case-study copy are awaiting supplied content.",
-    tone: "silver",
-    status: "Case study pending",
-  },
-  {
-    number: "02",
-    title: "Epure",
-    description: "Project description and final case-study copy are awaiting supplied content.",
-    tone: "graphite",
-    status: "Case study pending",
-  },
-  {
-    number: "03",
-    title: "Schedura",
-    description: "Project description and final case-study copy are awaiting supplied content.",
-    tone: "lavender",
-    status: "Case study pending",
-  },
-  {
-    number: "04",
-    title: "Fourth project",
-    description: "Project title, description, imagery and case-study destination have not been supplied.",
-    tone: "paper",
-    status: "Project details pending",
-  },
-];
+import { ProductMockup } from "./product-mockup";
 
 function LocalTime() {
   const [time, setTime] = useState("—:—");
@@ -69,40 +26,6 @@ function LocalTime() {
   }, []);
 
   return <time>{time} SGT</time>;
-}
-
-function ProductMockup({ project }: { project: Project }) {
-  return (
-    <div className={`project-preview tone-${project.tone}`} aria-label={`${project.title} project artwork placeholder`}>
-      <div className="preview-browser">
-        <div className="preview-bar">
-          <span>{project.number}</span>
-          <b>{project.title}</b>
-          <span>PROJECT</span>
-        </div>
-        <div className="preview-layout">
-          <aside><i /><i /><i /><i /></aside>
-          <div className="preview-content">
-            <p>SELECTED WORK / {project.number}</p>
-            <strong>{project.title}</strong>
-            <div className="preview-grid">
-              <i /><i /><i /><i /><i /><i />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="preview-card preview-card-a">
-        <span>{project.number}</span>
-        <b>{project.title}</b>
-        <i /><i /><i />
-      </div>
-      <div className="preview-card preview-card-b">
-        <span>JL / PRODUCT</span>
-        <div className="preview-orb" />
-        <b>DETAIL</b>
-      </div>
-    </div>
-  );
 }
 
 function ProjectStage({
@@ -168,121 +91,13 @@ function ProjectStage({
   );
 }
 
-function ProjectDetail({ project, onClose }: { project: Project | null; onClose: () => void }) {
-  useEffect(() => {
-    if (!project) return;
-    const previousOverflow = document.body.style.overflow;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [onClose, project]);
-
-  return (
-    <AnimatePresence>
-      {project ? (
-        <motion.div
-          className="project-detail-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="project-detail-title"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onMouseDown={onClose}
-        >
-          <motion.article
-            className="project-detail"
-            initial={{ y: "8%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "8%" }}
-            transition={{ type: "spring", stiffness: 150, damping: 24 }}
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <header>
-              <span>Selected work / {project.number}</span>
-              <button type="button" onClick={onClose} aria-label="Close project details">Close ×</button>
-            </header>
-            <div className="project-detail-grid">
-              <div>
-                <h2 id="project-detail-title">{project.title}</h2>
-                <p>{project.description}</p>
-                <span className="case-link" aria-disabled="true">{project.status}</span>
-              </div>
-              <div className="project-detail-media"><ProductMockup project={project} /></div>
-            </div>
-          </motion.article>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
-  );
-}
-
-type TransitionPhase = "cover" | "reveal" | null;
-
-function BarWipe({ phase }: { phase: TransitionPhase }) {
-  return (
-    <AnimatePresence>
-      {phase ? (
-        <motion.div className="bar-wipe" aria-hidden="true" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          {Array.from({ length: 8 }, (_, index) => (
-            <motion.i
-              key={index}
-              initial={{ scaleX: phase === "cover" ? 0 : 1 }}
-              animate={{ scaleX: phase === "cover" ? 1 : 0 }}
-              transition={{
-                duration: .28,
-                delay: (phase === "cover" ? index : 7 - index) * .034,
-                ease: [0.76, 0, 0.24, 1],
-              }}
-            />
-          ))}
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
-  );
-}
-
 export function PortfolioHome() {
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [transitionPhase, setTransitionPhase] = useState<TransitionPhase>(null);
-  const transitionTimers = useRef<number[]>([]);
-  const reducedMotion = useReducedMotion();
-
-  const navigateWithBars = useCallback((action: () => void) => {
-    transitionTimers.current.forEach((timer) => window.clearTimeout(timer));
-    transitionTimers.current = [];
-    if (reducedMotion) {
-      action();
-      return;
-    }
-
-    setTransitionPhase("cover");
-    transitionTimers.current.push(
-      window.setTimeout(() => {
-        action();
-        setTransitionPhase("reveal");
-      }, 520),
-      window.setTimeout(() => setTransitionPhase(null), 1040),
-    );
-  }, [reducedMotion]);
-
-  const openProject = useCallback((project: Project) => {
-    navigateWithBars(() => setSelectedProject(project));
-  }, [navigateWithBars]);
-
-  const closeProject = useCallback(() => {
-    navigateWithBars(() => setSelectedProject(null));
-  }, [navigateWithBars]);
+  const hoverTimeout = useRef<number | null>(null);
+  const { navigate } = usePageTransition();
 
   useEffect(() => () => {
-    transitionTimers.current.forEach((timer) => window.clearTimeout(timer));
+    if (hoverTimeout.current) window.clearTimeout(hoverTimeout.current);
   }, []);
 
   return (
@@ -363,14 +178,19 @@ export function PortfolioHome() {
               project={project}
               index={index}
               key={project.number}
-              onActivate={openProject}
-              onHover={setHoveredProject}
+              onActivate={(activeProject) => navigate(`/work/${activeProject.slug}`)}
+              onHover={(activeProject) => {
+                if (hoverTimeout.current) window.clearTimeout(hoverTimeout.current);
+                if (activeProject) {
+                  setHoveredProject(activeProject);
+                  return;
+                }
+                hoverTimeout.current = window.setTimeout(() => setHoveredProject(null), 80);
+              }}
             />
           ))}
         </div>
       </section>
-      <ProjectDetail project={selectedProject} onClose={closeProject} />
-      <BarWipe phase={transitionPhase} />
     </main>
   );
 }

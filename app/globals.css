@@ -1160,6 +1160,42 @@ a:focus-visible {
   min-height: 65svh;
 }
 
+.project-detail-page {
+  min-height: 100svh;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.project-detail-shell {
+  padding: 1rem;
+}
+
+.project-detail-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.1rem 0 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 500 .66rem/1 var(--font-geist-mono), monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.project-detail-page-panel {
+  max-height: none;
+  min-height: calc(100svh - 4.5rem);
+  padding: 1.25rem 0 0;
+  box-shadow: none;
+}
+
 .bar-wipe {
   position: fixed;
   z-index: 300;
@@ -1338,8 +1374,11 @@ a:focus-visible {
     grid-row: 3;
   }
 
+  .project-detail-shell { padding: 1rem; }
+  .project-detail-nav { padding-bottom: .9rem; }
   .project-detail-backdrop { padding: 0; }
   .project-detail { max-height: 100svh; min-height: 100svh; padding: 1rem; }
+  .project-detail-page-panel { min-height: calc(100svh - 4rem); padding: 1rem 0 0; }
   .project-detail-grid { display: flex; flex-direction: column-reverse; min-height: 0; gap: 1.5rem; }
   .project-detail-media { min-height: 48svh; }
   .project-detail-grid > div:first-child { padding: 1rem 0 3rem; }
