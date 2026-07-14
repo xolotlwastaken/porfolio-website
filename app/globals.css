@@ -254,7 +254,7 @@ a:focus-visible {
 }
 
 .static-core-table .core-form {
-  left: 50%;
+  left: 64%;
   right: auto;
   width: 13%;
   height: 22%;
@@ -262,10 +262,10 @@ a:focus-visible {
   transform: none;
 }
 
-.static-core-table .core-form-productivity { bottom: 18%; }
-.static-core-table .core-form-ai { top: auto; bottom: 39%; }
-.static-core-table .core-form-mobile { top: auto; bottom: 60%; }
-.static-core-table .core-form-infra { top: auto; bottom: 81%; }
+.static-core-table .core-form-productivity { top: auto; bottom: 81%; }
+.static-core-table .core-form-ai { top: auto; bottom: 60%; }
+.static-core-table .core-form-mobile { top: auto; bottom: 39%; }
+.static-core-table .core-form-infra { top: auto; bottom: 18%; }
 
 .static-core-table > b {
   position: absolute;
