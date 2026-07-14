@@ -71,32 +71,32 @@ function LocalTime() {
 
 function ProductMockup({ project }: { project: Project }) {
   return (
-    <div className={`mockup-world tone-${project.tone}`} aria-label={`${project.title} visual placeholder`}>
-      <div className="browser-frame">
-        <div className="browser-top">
-          <span /><span /><span />
+    <div className={`project-preview tone-${project.tone}`} aria-label={`${project.title} project artwork placeholder`}>
+      <div className="preview-browser">
+        <div className="preview-bar">
+          <span>{project.number}</span>
           <b>{project.title}</b>
+          <span>PROJECT</span>
         </div>
-        <div className="browser-content">
-          <div className="mock-sidebar">
-            <i /><i /><i /><i />
-          </div>
-          <div className="mock-main">
-            <p>{project.number} / SELECTED WORK</p>
+        <div className="preview-layout">
+          <aside><i /><i /><i /><i /></aside>
+          <div className="preview-content">
+            <p>SELECTED WORK / {project.number}</p>
             <strong>{project.title}</strong>
-            <div className="mock-chart"><i /><i /><i /><i /><i /></div>
-            <div className="mock-row"><i /><i /><i /></div>
+            <div className="preview-grid">
+              <i /><i /><i /><i /><i /><i />
+            </div>
           </div>
         </div>
       </div>
-      <div className="support-screen support-a">
+      <div className="preview-card preview-card-a">
         <span>{project.number}</span>
         <b>{project.title}</b>
         <i /><i /><i />
       </div>
-      <div className="support-screen support-b">
-        <span>VIEW</span>
-        <div className="support-orb" />
+      <div className="preview-card preview-card-b">
+        <span>JL / PRODUCT</span>
+        <div className="preview-orb" />
         <b>DETAIL</b>
       </div>
     </div>
@@ -110,10 +110,15 @@ function ProjectStage({ project, index }: { project: Project; index: number }) {
     offset: ["start end", "end start"],
   });
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 75, damping: 22, mass: 0.4 });
-  const mediaY = useTransform(smoothProgress, [0.12, 0.5, 0.88], [90, 0, -70]);
-  const mediaScale = useTransform(smoothProgress, [0.1, 0.5, 0.9], [0.9, 1, 0.94]);
-  const textY = useTransform(smoothProgress, [0.15, 0.48, 0.85], [36, 0, -24]);
-  const progress = useTransform(smoothProgress, [0.12, 0.88], ["0%", "100%"]);
+  const mediaY = useTransform(smoothProgress, [0.08, 0.5, 0.92], [110, 0, -80]);
+  const mediaScale = useTransform(smoothProgress, [0.08, 0.5, 0.92], [0.94, 1, 0.97]);
+  const titleX = useTransform(
+    smoothProgress,
+    [0.08, 0.5, 0.92],
+    index % 2 === 0 ? [-70, 0, 46] : [70, 0, -46],
+  );
+  const copyY = useTransform(smoothProgress, [0.12, 0.5, 0.88], [34, 0, -22]);
+  const progress = useTransform(smoothProgress, [0.08, 0.92], ["0%", "100%"]);
 
   return (
     <motion.article
@@ -121,29 +126,31 @@ function ProjectStage({ project, index }: { project: Project; index: number }) {
       className="project-stage"
       id={`project-${index + 1}`}
       aria-labelledby={`project-title-${index + 1}`}
+      data-align={index % 2 === 0 ? "left" : "right"}
     >
-      <div className="project-sticky">
-        <div className="project-frame">
-          <motion.header className="project-copy" style={{ y: textY }}>
-            <p className="eyebrow">Selected work / {project.number}</p>
-            <h2 id={`project-title-${index + 1}`}>{project.title}</h2>
-            <p className="project-description">{project.description}</p>
-            <span className="case-link" aria-disabled="true">{project.status} <span>↗</span></span>
-          </motion.header>
+      <div className="project-frame">
+        <div className="project-meta">
+          <span>({project.number})</span>
+          <span>Product design + build</span>
+          <span>Case study</span>
+        </div>
 
-          <motion.div
-            className="project-media"
-            style={{ y: mediaY, scale: mediaScale }}
-          >
-            <ProductMockup project={project} />
-          </motion.div>
+        <motion.h2 style={{ x: titleX }} id={`project-title-${index + 1}`}>{project.title}</motion.h2>
 
-          <span className="project-number" aria-hidden="true">{project.number}</span>
-          <div className="stage-progress" aria-hidden="true">
-            <span>{project.number}</span>
-            <i><motion.b style={{ width: progress }} /></i>
-            <span>04</span>
-          </div>
+        <motion.div className="project-media" style={{ y: mediaY, scale: mediaScale }}>
+          <ProductMockup project={project} />
+          <span className="preview-action" aria-hidden="true">View project</span>
+        </motion.div>
+
+        <motion.div className="project-copy" style={{ y: copyY }}>
+          <p className="project-description">{project.description}</p>
+          <span className="case-link" aria-disabled="true">{project.status} <span>↗</span></span>
+        </motion.div>
+
+        <div className="stage-progress" aria-hidden="true">
+          <span>{project.number}</span>
+          <i><motion.b style={{ width: progress }} /></i>
+          <span>04</span>
         </div>
       </div>
     </motion.article>
@@ -188,6 +195,16 @@ export function PortfolioHome() {
       </section>
 
       <section className="work" id="work" aria-label="Selected work">
+        <div className="work-nav" aria-hidden="true">
+          <span>JL.</span>
+          <span>Selected projects</span>
+          <span>01—04</span>
+        </div>
+        <header className="work-intro">
+          <p>Independent product design + build</p>
+          <h2>Selected work</h2>
+          <span>Scroll to explore ↓</span>
+        </header>
         {projects.map((project, index) => (
           <ProjectStage project={project} index={index} key={project.number} />
         ))}
