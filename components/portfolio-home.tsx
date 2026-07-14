@@ -1,12 +1,13 @@
 "use client";
 
 import {
+  AnimatePresence,
   motion,
   useScroll,
   useSpring,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ProductCore } from "./product-core";
 
 type Project = {
@@ -103,7 +104,17 @@ function ProductMockup({ project }: { project: Project }) {
   );
 }
 
-function ProjectStage({ project, index }: { project: Project; index: number }) {
+function ProjectStage({
+  project,
+  index,
+  onActivate,
+  onHover,
+}: {
+  project: Project;
+  index: number;
+  onActivate: (project: Project) => void;
+  onHover: (project: Project | null) => void;
+}) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -112,12 +123,7 @@ function ProjectStage({ project, index }: { project: Project; index: number }) {
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 75, damping: 22, mass: 0.4 });
   const mediaY = useTransform(smoothProgress, [0.08, 0.5, 0.92], [110, 0, -80]);
   const mediaScale = useTransform(smoothProgress, [0.08, 0.5, 0.92], [0.94, 1, 0.97]);
-  const titleX = useTransform(
-    smoothProgress,
-    [0.08, 0.5, 0.92],
-    index % 2 === 0 ? [-70, 0, 46] : [70, 0, -46],
-  );
-  const copyY = useTransform(smoothProgress, [0.12, 0.5, 0.88], [34, 0, -22]);
+  const mediaOpacity = useTransform(smoothProgress, [0.04, 0.18, 0.82, 0.96], [0.25, 1, 1, 0.3]);
   const progress = useTransform(smoothProgress, [0.08, 0.92], ["0%", "100%"]);
 
   return (
@@ -129,23 +135,27 @@ function ProjectStage({ project, index }: { project: Project; index: number }) {
       data-align={index % 2 === 0 ? "left" : "right"}
     >
       <div className="project-frame">
-        <div className="project-meta">
-          <span>({project.number})</span>
-          <span>Product design + build</span>
-          <span>Case study</span>
-        </div>
-
-        <motion.h2 style={{ x: titleX }} id={`project-title-${index + 1}`}>{project.title}</motion.h2>
-
-        <motion.div className="project-media" style={{ y: mediaY, scale: mediaScale }}>
+        <motion.button
+          type="button"
+          className="project-media"
+          style={{ y: mediaY, scale: mediaScale, opacity: mediaOpacity }}
+          onPointerEnter={() => onHover(project)}
+          onPointerLeave={() => onHover(null)}
+          onFocus={() => onHover(project)}
+          onBlur={() => onHover(null)}
+          onClick={() => onActivate(project)}
+          aria-label={`Open ${project.title} project details`}
+        >
           <ProductMockup project={project} />
-          <span className="preview-action" aria-hidden="true">View project</span>
-        </motion.div>
+          <span className="preview-action" aria-hidden="true">Open project</span>
+        </motion.button>
 
-        <motion.div className="project-copy" style={{ y: copyY }}>
-          <p className="project-description">{project.description}</p>
-          <span className="case-link" aria-disabled="true">{project.status} <span>↗</span></span>
-        </motion.div>
+        <div className="project-mobile-copy">
+          <span>({project.number})</span>
+          <h2 id={`project-title-${index + 1}`}>{project.title}</h2>
+          <p>{project.description}</p>
+          <span>{project.status}</span>
+        </div>
 
         <div className="stage-progress" aria-hidden="true">
           <span>{project.number}</span>
@@ -157,7 +167,66 @@ function ProjectStage({ project, index }: { project: Project; index: number }) {
   );
 }
 
+function ProjectDetail({ project, onClose }: { project: Project | null; onClose: () => void }) {
+  useEffect(() => {
+    if (!project) return;
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose, project]);
+
+  return (
+    <AnimatePresence>
+      {project ? (
+        <motion.div
+          className="project-detail-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="project-detail-title"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onMouseDown={onClose}
+        >
+          <motion.article
+            className="project-detail"
+            initial={{ y: "8%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "8%" }}
+            transition={{ type: "spring", stiffness: 150, damping: 24 }}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header>
+              <span>Selected work / {project.number}</span>
+              <button type="button" onClick={onClose} aria-label="Close project details">Close ×</button>
+            </header>
+            <div className="project-detail-grid">
+              <div>
+                <h2 id="project-detail-title">{project.title}</h2>
+                <p>{project.description}</p>
+                <span className="case-link" aria-disabled="true">{project.status}</span>
+              </div>
+              <div className="project-detail-media"><ProductMockup project={project} /></div>
+            </div>
+          </motion.article>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
 export function PortfolioHome() {
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const closeProject = useCallback(() => setSelectedProject(null), []);
+
   return (
     <main>
       <section className="hero" id="top" aria-labelledby="hero-title">
@@ -200,15 +269,49 @@ export function PortfolioHome() {
           <span>Selected projects</span>
           <span>01—04</span>
         </div>
-        <header className="work-intro">
-          <p>Independent product design + build</p>
-          <h2>Selected work</h2>
-          <span>Scroll to explore ↓</span>
-        </header>
-        {projects.map((project, index) => (
-          <ProjectStage project={project} index={index} key={project.number} />
-        ))}
+        <div className="work-sticky" aria-live="polite">
+          <AnimatePresence mode="wait">
+            {hoveredProject ? (
+              <motion.div
+                className={`work-hover-info ${Number(hoveredProject.number) % 2 === 1 ? "info-right" : "info-left"}`}
+                key={hoveredProject.number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+              >
+                <span>({hoveredProject.number}) / Product design + build</span>
+                <h2>{hoveredProject.title}</h2>
+                <p>{hoveredProject.description}</p>
+                <b>{hoveredProject.status} · Click to open</b>
+              </motion.div>
+            ) : (
+              <motion.header
+                className="work-intro"
+                key="selected-work"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, scale: .96 }}
+              >
+                <p>Independent product design + build</p>
+                <h2>Selected work</h2>
+                <span>Scroll to explore ↓</span>
+              </motion.header>
+            )}
+          </AnimatePresence>
+        </div>
+        <div className="project-stream">
+          {projects.map((project, index) => (
+            <ProjectStage
+              project={project}
+              index={index}
+              key={project.number}
+              onActivate={setSelectedProject}
+              onHover={setHoveredProject}
+            />
+          ))}
+        </div>
       </section>
+      <ProjectDetail project={selectedProject} onClose={closeProject} />
     </main>
   );
 }
