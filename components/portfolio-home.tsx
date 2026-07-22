@@ -84,7 +84,7 @@ function ProjectStage({
         <div className="stage-progress" aria-hidden="true">
           <span>{project.number}</span>
           <i><motion.b style={{ width: progress }} /></i>
-          <span>04</span>
+          <span>03</span>
         </div>
       </div>
     </motion.article>
@@ -140,7 +140,7 @@ export function PortfolioHome() {
         <div className="work-nav" aria-hidden="true">
           <span>JL.</span>
           <span>Selected projects</span>
-          <span>01—04</span>
+          <span>01—03</span>
         </div>
         <div className="work-sticky" aria-live="polite">
           <AnimatePresence mode="wait">
