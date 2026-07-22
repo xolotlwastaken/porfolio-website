@@ -10,6 +10,8 @@ export type Project = {
   screenshots: string[];
 };
 
+const base = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
+
 export const projects: Project[] = [
   {
     slug: "aegis-router",
@@ -22,7 +24,7 @@ export const projects: Project[] = [
     tone: "silver",
     status: "Live project",
     url: "https://aegisrouter.com/",
-    screenshots: ["/project_images/aegisrouter/aegis-1.png", "/project_images/aegisrouter/aegis-2.png", "/project_images/aegisrouter/aegis-3.png"],
+    screenshots: [`${base}/project_images/aegisrouter/aegis-1.png`, `${base}/project_images/aegisrouter/aegis-2.png`, `${base}/project_images/aegisrouter/aegis-3.png`],
   },
   {
     slug: "epure",
@@ -35,7 +37,7 @@ export const projects: Project[] = [
     tone: "graphite",
     status: "Live project",
     url: "https://epure-site-one.vercel.app/",
-    screenshots: ["/project_images/epure/epure-1.png", "/project_images/epure/epure-2.png", "/project_images/epure/epure-3.png"],
+    screenshots: [`${base}/project_images/epure/epure-1.png`, `${base}/project_images/epure/epure-2.png`, `${base}/project_images/epure/epure-3.png`],
   },
   {
     slug: "gymstamp",
@@ -48,7 +50,7 @@ export const projects: Project[] = [
     tone: "lavender",
     status: "Live project",
     url: "https://gymstamp-site.rapiapps.workers.dev/",
-    screenshots: ["/project_images/gymstamp/gymstamp-1.png", "/project_images/gymstamp/gymstamp-2.png", "/project_images/gymstamp/gymstamp-3.png"],
+    screenshots: [`${base}/project_images/gymstamp/gymstamp-1.png`, `${base}/project_images/gymstamp/gymstamp-2.png`, `${base}/project_images/gymstamp/gymstamp-3.png`],
   },
 ];
 
