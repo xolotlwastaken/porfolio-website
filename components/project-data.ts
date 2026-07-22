@@ -22,7 +22,7 @@ export const projects: Project[] = [
     tone: "silver",
     status: "Live project",
     url: "https://aegisrouter.com/",
-    screenshots: ["/project_images/aegisrouter/Screenshot 2026-07-22 at 8.26.14 AM.png", "/project_images/aegisrouter/Screenshot 2026-07-22 at 8.26.29 AM.png", "/project_images/aegisrouter/Screenshot 2026-07-22 at 8.26.58 AM.png"],
+    screenshots: ["/project_images/aegisrouter/aegis-1.png", "/project_images/aegisrouter/aegis-2.png", "/project_images/aegisrouter/aegis-3.png"],
   },
   {
     slug: "epure",
@@ -35,7 +35,7 @@ export const projects: Project[] = [
     tone: "graphite",
     status: "Live project",
     url: "https://epure-site-one.vercel.app/",
-    screenshots: ["/project_images/epure/Screenshot 2026-07-22 at 8.25.28 AM.png", "/project_images/epure/Screenshot 2026-07-22 at 8.25.38 AM.png", "/project_images/epure/Screenshot 2026-07-22 at 8.31.01 AM.png"],
+    screenshots: ["/project_images/epure/epure-1.png", "/project_images/epure/epure-2.png", "/project_images/epure/epure-3.png"],
   },
   {
     slug: "gymstamp",
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     tone: "lavender",
     status: "Live project",
     url: "https://gymstamp-site.rapiapps.workers.dev/",
-    screenshots: ["/project_images/gymstamp/Screenshot 2026-07-22 at 8.28.29 AM.png", "/project_images/gymstamp/Screenshot 2026-07-22 at 8.28.41 AM.png", "/project_images/gymstamp/Screenshot 2026-07-22 at 8.31.23 AM.png"],
+    screenshots: ["/project_images/gymstamp/gymstamp-1.png", "/project_images/gymstamp/gymstamp-2.png", "/project_images/gymstamp/gymstamp-3.png"],
   },
 ];
 
