@@ -36,6 +36,9 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://xolotlwastaken.github.io/porfolio-website
         run: npm run pages:build
 
+      - name: Copy public assets
+        run: cp -r public out
+
       - name: Prepare Pages artifact
         run: touch out/.nojekyll
 
